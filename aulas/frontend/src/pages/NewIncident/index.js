@@ -1,14 +1,45 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import { FiArrowLeft } from 'react-icons/fi';
 
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import logoImg from '../../assets/logo.svg'
 
 import './styles.css';
 
-function NewIncident() {
+import api from '../../services/api'
 
+
+function NewIncident() {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [value, setValue] = useState(''); 
+    
+    const history = useHistory();
+        
+    const ongId = localStorage.getItem('ongId');
+
+    async function handleNewIncident() {
+
+        const data = {
+            title, 
+            description,
+            value
+        };
+
+        try {
+            await api.post('incidents', data, {
+                headers: {
+                    authorization: ongId,
+                }
+            })
+            history.push('/profile');
+        }
+        catch(err){
+            alert('Erro ao cadastrar caso')
+        }
+    }
+    
     return(
         <div className="new-incident-container">
             <div className="content">
@@ -25,11 +56,24 @@ function NewIncident() {
 
 
                 </section> 
-                <form>
-                    <input placeholder="Title"/>
-                    <textarea placeholder="Descrição" />
+                <form onSubmit= {handleNewIncident}>
+                    <input 
+                        placeholder="Title"
+                        value={title}
+                        onChange = {e => setTitle(e.target.value)}
+                    />
+                    <textarea 
+                        placeholder="Descrição"
+                        value={description}
+                        onChange = {e => setDescription(e.target.value)} 
+                    
+                    />
 
-                    <input placeholder="Value"/>
+                    <input 
+                        placeholder="Value"
+                        value={value}
+                        onChange = {e => setValue(e.target.value)}
+                    />
 
                     <button className="button" type="submit"> register </button>
                 </form>
