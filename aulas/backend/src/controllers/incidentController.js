@@ -4,10 +4,11 @@ module.exports = {
     async index(req, res) {
 
         const {page = 1} = req.query;
+        
         const [count] = await connection('incidents').count();
         console.log(count);
         const incidents = await connection('incidents')
-        .join('ongs', 'ong_id', '=', 'incidents.ong_id')
+        .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
         .limit(5)
         .offset((page -1) * 5)
         .select([
@@ -26,6 +27,7 @@ module.exports = {
 
     async create(req, res) {
         const {title, description, value} = req.body;
+
         const ong_id = req.headers.authorization;
 
         const [id] = await connection('incidents').insert({
